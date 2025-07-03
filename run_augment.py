@@ -7,7 +7,7 @@ from sentence_transformers import SentenceTransformer
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
-MODEL_DIR = "./doaug_artifacts_v0/doaug_paraphraser"
+MODEL_DIR = "./doaug_artifacts/doaug_paraphraser"
 HF_TOKEN = os.environ["HF_TOKEN"]
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 EMB_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
@@ -18,8 +18,8 @@ SYSTEM_MSG = "You are a helpful assistant that only paraphrases."
 tok = AutoTokenizer.from_pretrained(MODEL_DIR, token=HF_TOKEN)
 END_ID = tok.convert_tokens_to_ids("<|eot_id|>")
 
-# PROMPT = "You will be given a sentence. Please paraphrase the sentence.\nSentence: "
-PROMPT = "Paraphrase the following sentence:\n"
+PROMPT = "You will be given a sentence. Please paraphrase the sentence.\nSentence: "
+# PROMPT = "Paraphrase the following sentence:\n"
 
 
 def chat_prompt(s: str) -> str:
@@ -57,7 +57,7 @@ def most_distant(paraphrases, original, embedder):
     )
     base = embs[0]
     dists = 1 - (embs[1:] @ base)
-    return paraphrases[int(torch.argmin(dists))]
+    return paraphrases[int(torch.argmax(dists))]
 
 
 def main(inp: Path, out: Path):
